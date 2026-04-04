@@ -1,0 +1,31 @@
+note.txt
+
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+env/
+
+# ML models (too large for GitHub)
+ml_service/models/*.h5
+ml_service/models/*.keras
+
+# Node
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Environment variables
+.env
+*.env
+
+# Build folders
+client/dist/
+client/build/
+server/dist/
+
+# OS files
+.DS_Store
+Thumbs.db
