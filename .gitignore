@@ -9,8 +9,8 @@ venv/
 env/
 
 # ML models (too large for GitHub)
-ml_service/models/*.h5
-ml_service/models/*.keras
+ml-service/models/*.h5
+ml-service/models/*.keras
 
 # Node
 node_modules/
