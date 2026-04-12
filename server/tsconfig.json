@@ -7,7 +7,7 @@
 
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
-    "module": "commonjs",   // commonjs se replace kr skta h
+    "module": "nodenext",   // commonjs se replace kr skta h
     "target": "esnext",
     "types": [],
     // For nodejs:

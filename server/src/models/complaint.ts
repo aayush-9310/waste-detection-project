@@ -3,7 +3,7 @@ import mongoose from 'mongoose'
 
 const complaintSchema = new mongoose.Schema({
     complaint_id : {type : String, required : true, unique : true},
-    location : {type : String},
+    location : {type : String, required : true},
     name : {type : String, required : true},
     contact : {type : Number, required : true},
     description : {type : String, default : ''},
