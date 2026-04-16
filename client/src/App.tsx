@@ -1,18 +1,20 @@
-import { useState } from 'react'
-import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Home from './pages/Home'
+import Result from './pages/Result'
+import Complaints from './pages/Complaints'
 
-  return (
-    <>
-      <div className='text-3xl font-bold text-red-600 text-center pt-1'>  
-        <div className='mt-20'>
-          <h1>Waste Detection & Complaint Generation</h1>
-        </div>
-      </div>
-    </>
-  )
+
+function App(){
+  return<>
+    <BrowserRouter>
+      <Routes>
+        <Route path = "/" element = {<Home />} />
+        <Route path = "/result" element = {<Result />} />
+        <Route path = "/complaints" element = {<Complaints />} />
+      </Routes>
+    </BrowserRouter>
+  </>
 }
 
 export default App

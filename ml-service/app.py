@@ -166,7 +166,7 @@ def predict():
         "severity_conf" : round(sev_conf, 2),
         "waste_type"    : waste_type,
         "waste_conf"    : round(waste_conf, 2),
-        "all_scores"    : all_scores,
+        # "all_scores"    : all_scores,
         "tips"          : tips
     })
 
