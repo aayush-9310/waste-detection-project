@@ -16,10 +16,10 @@ waste_model    = tf.keras.models.load_model('models/waste_classifier_final.keras
 severity_model = tf.keras.models.load_model('models/severity_model_best.h5')
 
 with open('models/class_indices.json', 'r') as f:
-    waste_classes = {int(k): v for k, v in json.load(f).items()}
+    waste_classes = {int(k): v for k, v in json.load(f).items()}    #  json.load(f) - read json file and convert it into python dict , .items() - convert dict into key-value pairs  ,loop through each key value pair converting key from string to integer, final output --> { 0 : 'plastic', 1:'paper' }
 
 with open('models/severity_class_indices.json', 'r') as f:
-    severity_classes = json.load(f)
+    severity_classes = {int(k): v for k, v in json.load(f).items()}   # convert json file into python dict
 
 print("Waste classes    :", list(waste_classes.values()))
 print("Severity classes :", severity_classes)
@@ -121,52 +121,46 @@ TIPS = {
 
 # ── Helper: preprocess image ──────────────────────────────
 def preprocess(file_bytes):
-    img = Image.open(io.BytesIO(file_bytes)).convert('RGB')
+    img = Image.open(io.BytesIO(file_bytes)).convert('RGB')  # convert the raw bytes into image
     img = img.resize((224, 224))
-    arr = np.array(img) / 255.0
-    return np.expand_dims(arr, axis=0)
+    arr = np.array(img) / 255.0    # convert image to array , 0-1(normalize)
+    return np.expand_dims(arr, axis=0)  # Adding an extra dimension at axis 0 coz model expects (batch_size, height, width, channels) , to make whole array in one batch to become one singel image not many images of small pixels
 
 # ── Route: health check ───────────────────────────────────
 @app.route('/health', methods=['GET'])
 def health():
-    return jsonify({ "status": "ML service running", "models": 2 })
+    return jsonify({ "status": "ML service running", "models": 2 })  # convert python dict into json ans send as an HTTP response
 
 # ── Route: predict ────────────────────────────────────────
 @app.route('/predict', methods=['POST'])
 def predict():
     if 'file' not in request.files:
-        return jsonify({ "error": "No image sent" }), 400
+        return jsonify({ "error": "No image sent" }), 400   # status code (Bad Request)
 
     file_bytes = request.files['file'].read()
-    img_array  = preprocess(file_bytes)
+    img_array  = preprocess(file_bytes) 
 
     # ── Step 1: Check severity first ─────────────────────
-    sev_preds   = severity_model.predict(img_array, verbose=0)
-    sev_idx     = int(np.argmax(sev_preds))
-    sev_label   = severity_classes[str(sev_idx)]   # "high" or "low"
+    sev_preds   = severity_model.predict(img_array, verbose=0)   # output -> probability of image in all classes 
+    sev_idx     = int(np.argmax(sev_preds))     # give the index of highest value among all the classes prob.
+    sev_label   = severity_classes[sev_idx]   # "high" or "low", index se label
     sev_conf    = float(np.max(sev_preds)) * 100
     severity    = sev_label.upper()
 
     # ── Step 2: Always classify waste type too ────────────
-    waste_preds   = waste_model.predict(img_array, verbose=0)
+    waste_preds   = waste_model.predict(img_array, verbose=0)  # array of prob.
     waste_idx     = int(np.argmax(waste_preds))
     waste_type    = waste_classes[waste_idx]
-    waste_conf    = float(np.max(waste_preds)) * 100
-
-    all_scores = {
-        waste_classes[i]: round(float(waste_preds[0][i]) * 100, 2)
-        for i in range(len(waste_preds[0]))
-    }
+    waste_conf    = float(np.max(waste_preds)) * 100   # 80.0
 
     # ── Step 3: Build response based on severity ──────────
-    tips = TIPS.get(waste_type, TIPS["trash"]) if severity == "LOW" else None
+    tips = TIPS[waste_type] if severity == "LOW" else None
 
     return jsonify({
         "severity"      : severity,
         "severity_conf" : round(sev_conf, 2),
         "waste_type"    : waste_type,
         "waste_conf"    : round(waste_conf, 2),
-        # "all_scores"    : all_scores,
         "tips"          : tips
     })
 
