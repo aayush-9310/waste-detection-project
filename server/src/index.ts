@@ -13,7 +13,8 @@ app.use(cors())
 async function main(){
     try{
         await mongoose.connect(process.env.MONGO_URL!);
-        app.listen(3000, ()=> console.log("running on port 3000"))
+        const PORT = process.env.PORT || 8000;
+        app.listen(PORT, ()=> console.log(`Running on Port ${PORT}`))
 
         console.log("db connected")
     }

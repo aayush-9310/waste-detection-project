@@ -1,4 +1,5 @@
 note.txt
+mlNote.txt
 test.html
 
 # Python
@@ -7,10 +8,6 @@ __pycache__/
 *.pyo
 venv/
 env/
-
-# ML models (too large for GitHub)
-ml-service/models/*.h5
-ml-service/models/*.keras
 
 # Node
 node_modules/
