@@ -11,13 +11,21 @@ interface DetectionResult{
     image : string
 }
 
+
+interface Coords {
+    lat : number 
+    lng : number
+}
+
 interface AppContextType{
-    result : DetectionResult | null
-    setResult : (r: DetectionResult) => void
+     result: DetectionResult | null
+    setResult: (r: DetectionResult) => void
     location: string
-    setLocation : (l: string) => void  // does not return anything
-    demoMode : boolean
-    setDemoMode : (d : boolean) => void
+    setLocation: (l: string) => void
+    coords: Coords | null
+    setCoords: (c: Coords | null) => void
+    demoMode: boolean
+    setDemoMode: (d: boolean) => void
     
 }
 
@@ -26,12 +34,14 @@ const AppContext = createContext<AppContextType | null>(null)
 export function AppProvider({children}:{children: ReactNode}){
     const[result,setResult] = useState<DetectionResult|null>(null)
     const[location,setLocation] = useState<string>('')
+    const[coords,setCoords] = useState<Coords | null>(null)
     const[demoMode,setDemoMode] = useState<boolean>(false)
 
     return(
         <AppContext.Provider value ={{
             result, setResult,
             location, setLocation,
+            coords, setCoords,
             demoMode, setDemoMode
         }}>
             {children}

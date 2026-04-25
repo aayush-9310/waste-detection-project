@@ -14,11 +14,13 @@ const generateId = () =>{
     return id
 }
 
+
+
 // this function get called when the model detects high severity
 router.post("/", async(req,res)=>{
     try{
         const {name, contact, location, description, imageUrl} = req.body
-
+        
         if(!name || !contact || !location){
             res.status(400).json({
                 error : "Name, contact and location are required"
