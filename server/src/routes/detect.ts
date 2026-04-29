@@ -57,18 +57,18 @@ router.post('/',upload.single('file'), async(req,res)=>{
 
         // these properties we getting from the ml model response
         res.json({
-            severity : result.severity,
-            severityConf : result.severity_conf,
-            wasteType : result.waste_type,
-            waste_conf : result.waste_conf,
-            tips : result.tips,
-            image : imageDataUrl
+       severity: result.severity,
+    severity_conf: result.severity_conf,
+    waste_type: result.waste_type,
+    waste_conf: result.waste_conf,
+    tips: result.tips,
+    image: imageDataUrl
         })
     }
     catch(e){
-        res.json({
-            msg : "some error occured"
-        })
+      console.error(e)
+    res.status(500).json({ error: "Detection failed" })
+
     }
 })
 

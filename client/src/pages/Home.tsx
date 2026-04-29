@@ -102,7 +102,9 @@ export default function Home() {
         formData.append("file", image)
 
         try {
-            const res = await axios.post('http://localhost:8000/api/detect', formData)
+            const res = await axios.post('http://localhost:3000/api/detect', formData)
+            console.log(res.data)  // add this
+
             setResult({ ...res.data, image: preview })
             navigate('/result')
         } catch (e) {
