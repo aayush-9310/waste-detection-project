@@ -1,17 +1,28 @@
-
 import { Link, useLocation } from 'react-router-dom'
 
-export default function Navbar(){
-    const {pathname} = useLocation()
+export default function Navbar() {
+    const { pathname } = useLocation()
 
-    return(
+    const links = [
+        { to: '/', label: 'Home' },
+        { to: '/admin', label: 'Admin' },
+    ]
+
+    return (
         <nav className='flex items-center justify-between bg-slate-800 px-10 h-14'>
             <Link to="/" className='text-white text-lg'>
-                Waste Detection & Complaint System
+                Waste Detection
             </Link>
-            <div className='flex gap-10'>
-                <Link to ="/" className={pathname === '/'? 'text-green-400' : 'text-slate-400'}>Home</Link>
-                <Link to ="/complaints" className={pathname === '/complaints' ? 'text-green-400' : 'text-slate-400'}>Complaints</Link>
+            <div className='flex gap-8'>
+                {links.map(link => (
+                    <Link
+                        key={link.to}
+                        to={link.to}
+                        className={pathname === link.to ? 'text-green-400' : 'text-slate-400'}
+                    >
+                        {link.label}
+                    </Link>
+                ))}
             </div>
         </nav>
     )
