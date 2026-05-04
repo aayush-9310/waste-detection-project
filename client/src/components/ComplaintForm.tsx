@@ -13,7 +13,8 @@ export default function ComplaintForm() {
     const [description, setDescription] = useState('')
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
-
+                                                                                  
+                                 
     // location string — prefer GPS coords, fallback to manual text
     const locationString = coords
         ? `${coords.lat.toFixed(5)}, ${coords.lng.toFixed(5)}`
