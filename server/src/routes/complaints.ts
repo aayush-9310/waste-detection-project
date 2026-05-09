@@ -1,5 +1,7 @@
 import express from 'express'
 import complaint from '../models/complaint.js'
+import { verifyAdmin } from '../middleware/auth.js' 
+
 
 const router = express.Router()
 
@@ -46,7 +48,7 @@ router.post("/", async (req, res) => {
     }
 })
 
-router.get('/', async (req, res) => {
+router.get('/', verifyAdmin, async (req, res) => {
     try {
         const complaints = await complaint.find().sort({ createdAt: -1 })
         res.json({
@@ -60,7 +62,7 @@ router.get('/', async (req, res) => {
 })
 
 // PATCH — update status with note
-router.patch('/:complaint_id', async (req, res) => {
+router.patch('/:complaint_id', verifyAdmin, async (req, res) => {
     try {
         const { status, note } = req.body
         const validStatuses = ['Pending', 'Viewed', 'Forwarded', 'In Progress', 'Resolved']
@@ -70,14 +72,14 @@ router.patch('/:complaint_id', async (req, res) => {
             return
         }
 
-        const updated = await complaint.findOneAndUpdate(
-            { complaint_id: req.params.complaint_id },
-            {
-                $set: { status },
-                $push: { timeline: { status, note: note || '', updatedAt: new Date() } }
-            },
-            { new: true }
-        )
+   const updated = await complaint.findOneAndUpdate(
+    { complaint_id: req.params['complaint_id'] } as Record<string, unknown>,
+    {
+        $set: { status },
+        $push: { timeline: { status, note: note || '', updatedAt: new Date() } }
+    },
+    { new: true }
+)
 
         if (!updated) {
             res.status(404).json({ error: 'Complaint not found' })

@@ -5,7 +5,7 @@ export default function Navbar() {
 
     const links = [
         { to: '/', label: 'Home' },
-        { to: '/admin', label: 'Admin' },
+        { to: '/complaints', label: 'Track Complaint' },
     ]
 
     return (
