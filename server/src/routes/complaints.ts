@@ -2,7 +2,6 @@ import express from 'express'
 import complaint from '../models/complaint.js'
 import { verifyAdmin } from '../middleware/auth.js' 
 
-
 const router = express.Router()
 
 const generateId = () => {
@@ -61,6 +60,34 @@ router.get('/', verifyAdmin, async (req, res) => {
     }
 })
 
+// GET — public, track by complaint_id or email
+router.get('/track', async (req, res) => {
+    try {
+        const q = req.query['q'] as string
+        if (!q) {
+            res.status(400).json({ error: 'Query required' })
+            return
+        }
+
+        const found = await complaint.findOne({
+            $or: [
+                { complaint_id: q.toUpperCase() },
+                { email: q.toLowerCase() }
+            ]
+        })
+
+        if (!found) {
+            res.status(404).json({ error: 'Complaint not found' })
+            return
+        }
+
+        res.json({ complaint: found })
+    } catch (e) {
+        console.error(e)
+        res.status(500).json({ error: 'Failed to track complaint' })
+    }
+})
+
 // PATCH — update status with note
 router.patch('/:complaint_id', verifyAdmin, async (req, res) => {
     try {
@@ -72,14 +99,14 @@ router.patch('/:complaint_id', verifyAdmin, async (req, res) => {
             return
         }
 
-   const updated = await complaint.findOneAndUpdate(
-    { complaint_id: req.params['complaint_id'] } as Record<string, unknown>,
-    {
-        $set: { status },
-        $push: { timeline: { status, note: note || '', updatedAt: new Date() } }
-    },
-    { new: true }
-)
+        const updated = await complaint.findOneAndUpdate(
+            { complaint_id: req.params['complaint_id'] } as Record<string, unknown>,
+            {
+                $set: { status },
+                $push: { timeline: { status, note: note || '', updatedAt: new Date() } }
+            },
+            { new: true }
+        )
 
         if (!updated) {
             res.status(404).json({ error: 'Complaint not found' })

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import axios from 'axios'
 
@@ -34,6 +35,7 @@ const statusColor: Record<string, string> = {
 }
 
 export default function Admin() {
+    const navigate = useNavigate()
     const [complaints, setComplaints] = useState<Complaint[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('')
@@ -42,13 +44,17 @@ export default function Admin() {
     const [noteInput, setNoteInput] = useState<Record<string, string>>({})
     const [statusInput, setStatusInput] = useState<Record<string, string>>({})
 
+    const token = localStorage.getItem('admin_token')
+
+    const authHeader = { headers: { Authorization: `Bearer ${token}` } }
+
     useEffect(() => {
         fetchComplaints()
     }, [])
 
     async function fetchComplaints() {
         try {
-            const res = await axios.get('http://localhost:3000/api/complaints')
+            const res = await axios.get('http://localhost:3000/api/complaints', authHeader)
             setComplaints(res.data.complaints)
         } catch (e) {
             console.error(e)
@@ -61,12 +67,15 @@ export default function Admin() {
     async function updateStatus(complaint_id: string) {
         const status = statusInput[complaint_id]
         const note = noteInput[complaint_id] || ''
-
         if (!status) return
 
         setUpdating(complaint_id)
         try {
-            const res = await axios.patch(`http://localhost:3000/api/complaints/${complaint_id}`, { status, note })
+            const res = await axios.patch(
+                `http://localhost:3000/api/complaints/${complaint_id}`,
+                { status, note },
+                authHeader
+            )
             setComplaints(prev => prev.map(c =>
                 c.complaint_id === complaint_id
                     ? { ...c, status: res.data.status, timeline: res.data.timeline }
@@ -81,14 +90,27 @@ export default function Admin() {
         }
     }
 
+    function handleLogout() {
+        localStorage.removeItem('admin_token')
+        navigate('/admin/login')
+    }
+
     return (
         <div className='min-h-screen bg-slate-900'>
             <Navbar />
             <div className='max-w-3xl mx-auto px-4 py-8'>
-                <h1 className='text-white text-2xl font-medium mb-6'>
-                    Admin Dashboard
-                    <span className='text-slate-400 text-sm font-normal ml-3'>{complaints.length} complaints</span>
-                </h1>
+                <div className='flex justify-between items-center mb-6'>
+                    <h1 className='text-white text-2xl font-medium'>
+                        Admin Dashboard
+                        <span className='text-slate-400 text-sm font-normal ml-3'>{complaints.length} complaints</span>
+                    </h1>
+                    <button
+                        onClick={handleLogout}
+                        className='text-slate-400 text-sm border border-slate-600 px-3 py-1 rounded-lg hover:border-slate-400 transition'
+                    >
+                        Logout
+                    </button>
+                </div>
 
                 {loading && <p className='text-slate-400'>Loading...</p>}
                 {error && <p className='text-red-400'>{error}</p>}
@@ -98,7 +120,6 @@ export default function Admin() {
                     {complaints.map(c => (
                         <div key={c._id} className='bg-slate-800 rounded-lg p-4'>
 
-                            {/* Header */}
                             <div className='flex justify-between items-start mb-3'>
                                 <div>
                                     <p className='text-white font-medium'>{c.complaint_id}</p>
@@ -109,7 +130,6 @@ export default function Admin() {
                                 </span>
                             </div>
 
-                            {/* Info grid */}
                             <div className='grid grid-cols-2 gap-2 text-sm mb-3'>
                                 <div>
                                     <p className='text-slate-400 text-xs'>Name</p>
@@ -144,7 +164,6 @@ export default function Admin() {
                                 </div>
                             )}
 
-                            {/* Toggle timeline */}
                             <button
                                 onClick={() => setExpanded(expanded === c.complaint_id ? null : c.complaint_id)}
                                 className='text-slate-400 text-xs underline mb-3'
@@ -152,7 +171,6 @@ export default function Admin() {
                                 {expanded === c.complaint_id ? 'Hide Timeline' : 'View Timeline'}
                             </button>
 
-                            {/* Timeline */}
                             {expanded === c.complaint_id && (
                                 <div className='mb-4 border-l-2 border-slate-600 pl-4 flex flex-col gap-3'>
                                     {c.timeline.map((t, i) => (
@@ -169,7 +187,6 @@ export default function Admin() {
                                 </div>
                             )}
 
-                            {/* Status update */}
                             {c.status !== 'Resolved' && (
                                 <div className='flex flex-col gap-2 pt-3 border-t border-slate-700'>
                                     <select
@@ -178,9 +195,12 @@ export default function Admin() {
                                         className='bg-slate-700 text-slate-300 text-sm px-3 py-2 rounded-lg outline-none'
                                     >
                                         <option value=''>Select next status</option>
-                                        {STATUS_PIPELINE.filter(s => STATUS_PIPELINE.indexOf(s) > STATUS_PIPELINE.indexOf(c.status)).map(s => (
-                                            <option key={s} value={s}>{s}</option>
-                                        ))}
+                                        {STATUS_PIPELINE
+                                            .filter(s => STATUS_PIPELINE.indexOf(s) > STATUS_PIPELINE.indexOf(c.status))
+                                            .map(s => (
+                                                <option key={s} value={s}>{s}</option>
+                                            ))
+                                        }
                                     </select>
                                     <input
                                         type='text'
@@ -198,7 +218,6 @@ export default function Admin() {
                                     </button>
                                 </div>
                             )}
-
                         </div>
                     ))}
                 </div>
