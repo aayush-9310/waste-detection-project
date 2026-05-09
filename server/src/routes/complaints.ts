@@ -30,7 +30,8 @@ router.post("/", async (req, res) => {
             description,
             imageUrl,
             waste_type,
-            severity
+            severity,
+            timeline: [{ status: 'Pending', note: 'Complaint filed by citizen' }]
         })
 
         res.status(201).json({
@@ -55,6 +56,43 @@ router.get('/', async (req, res) => {
     } catch (e) {
         console.error(e)
         res.status(500).json({ error: 'Failed to fetch complaints' })
+    }
+})
+
+// PATCH — update status with note
+router.patch('/:complaint_id', async (req, res) => {
+    try {
+        const { status, note } = req.body
+        const validStatuses = ['Pending', 'Viewed', 'Forwarded', 'In Progress', 'Resolved']
+
+        if (!status || !validStatuses.includes(status)) {
+            res.status(400).json({ error: 'Invalid status' })
+            return
+        }
+
+        const updated = await complaint.findOneAndUpdate(
+            { complaint_id: req.params.complaint_id },
+            {
+                $set: { status },
+                $push: { timeline: { status, note: note || '', updatedAt: new Date() } }
+            },
+            { new: true }
+        )
+
+        if (!updated) {
+            res.status(404).json({ error: 'Complaint not found' })
+            return
+        }
+
+        res.json({
+            msg: 'Status updated',
+            complaint_id: updated.complaint_id,
+            status: updated.status,
+            timeline: updated.timeline
+        })
+    } catch (e) {
+        console.error(e)
+        res.status(500).json({ error: 'Failed to update status' })
     }
 })
 
