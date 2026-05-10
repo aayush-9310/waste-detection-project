@@ -6,6 +6,7 @@ export default function Navbar() {
     const links = [
         { to: '/', label: 'Home' },
         { to: '/complaints', label: 'Track Complaint' },
+        { to: '/admin/login', label: 'Admin Dashboard' },
     ]
 
     return (
@@ -18,7 +19,7 @@ export default function Navbar() {
                     <Link
                         key={link.to}
                         to={link.to}
-                        className={pathname === link.to ? 'text-green-400' : 'text-slate-400'}
+                        className={pathname === link.to || (link.to === '/admin/login' && pathname.startsWith('/admin')) ? 'text-green-400' : 'text-slate-400'}
                     >
                         {link.label}
                     </Link>

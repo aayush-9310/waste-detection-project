@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 
@@ -8,6 +8,11 @@ export default function AdminLogin() {
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
+
+    useEffect(() => {
+        const token = localStorage.getItem('admin_token')
+        if (token) navigate('/admin')
+    }, [])
 
     async function handleLogin() {
         if (!email || !password) {
