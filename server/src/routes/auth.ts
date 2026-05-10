@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken'
 const router = express.Router()
 
 // hardcoded admin credentials for now
-const ADMIN_EMAIL = 'admin_id@waste.com'
+const ADMIN_EMAIL = 'admin@gmail.com'
 const ADMIN_PASSWORD = 'admin1234'
 
 router.post('/login', (req, res) => {

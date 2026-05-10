@@ -31,7 +31,7 @@ const STATUS_PIPELINE = ['Pending', 'Viewed', 'Forwarded', 'In Progress', 'Resol
 
 export default function Complaints() {
     const [query, setQuery] = useState('')
-    const [complaint, setComplaint] = useState<Complaint | null>(null)
+    const [complaints, setComplaints] = useState<Complaint[]>([])
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
 
@@ -39,11 +39,11 @@ export default function Complaints() {
         if (!query.trim()) return
         setLoading(true)
         setError('')
-        setComplaint(null)
+        setComplaints([])
 
         try {
             const res = await axios.get(`http://localhost:3000/api/complaints/track?q=${query.trim()}`)
-            setComplaint(res.data.complaint)
+            setComplaints(res.data.complaints)
         } catch (e) {
             setError('No complaint found for this ID or email')
         } finally {
@@ -52,9 +52,9 @@ export default function Complaints() {
     }
 
     return (
-        <div className='min-h-screen bg-slate-900'>
+        <div className='max-h-screen bg-slate-900'>
             <Navbar />
-            <div className='max-w-md mx-auto px-4 py-10'>
+            <div className='max-w-md mx-auto px-4 mt-24 pb-8'>
                 <h1 className='text-white text-2xl font-medium mb-2'>Track Your Complaint</h1>
                 <p className='text-slate-400 text-sm mb-8'>Enter your complaint ID or email to check status</p>
 
@@ -78,54 +78,61 @@ export default function Complaints() {
 
                 {error && <p className='text-red-400 text-sm mb-4'>{error}</p>}
 
-                {complaint && (
-                    <div className='bg-slate-800 rounded-lg p-4'>
-                        {/* Header */}
-                        <div className='flex justify-between items-start mb-4'>
-                            <div>
-                                <p className='text-white font-medium'>{complaint.complaint_id}</p>
-                                <p className='text-slate-400 text-xs mt-0.5'>Filed on {new Date(complaint.createdAt).toLocaleString()}</p>
-                            </div>
-                            <span className={`text-xs px-2 py-1 rounded-full ${statusColor[complaint.status]}`}>
-                                {complaint.status}
-                            </span>
-                        </div>
-
-                        {/* Info */}
-                        <div className='grid grid-cols-2 gap-2 text-sm mb-4'>
-                            <div>
-                                <p className='text-slate-400 text-xs'>Waste Type</p>
-                                <p className='text-slate-300 capitalize'>{complaint.waste_type}</p>
-                            </div>
-                            <div>
-                                <p className='text-slate-400 text-xs'>Severity</p>
-                                <p className={complaint.severity === 'HIGH' ? 'text-red-400' : 'text-green-400'}>{complaint.severity}</p>
-                            </div>
-                            <div className='col-span-2'>
-                                <p className='text-slate-400 text-xs'>Location</p>
-                                <p className='text-slate-300'>{complaint.location}</p>
-                            </div>
-                        </div>
-
-                        {/* Timeline */}
-                        <div>
-                            <p className='text-slate-400 text-xs mb-3'>Timeline</p>
-                            <div className='flex flex-col gap-3'>
-                                {STATUS_PIPELINE.map((s, i) => {
-                                    const entry = complaint.timeline.find(t => t.status === s)
-                                    const reached = STATUS_PIPELINE.indexOf(complaint.status) >= i
-                                    return (
-                                        <div key={s} className='flex gap-3 items-start'>
-                                            <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${reached ? 'bg-green-400' : 'bg-slate-600'}`} />
-                                            <div>
-                                                <p className={`text-sm ${reached ? 'text-white' : 'text-slate-500'}`}>{s}</p>
-                                                {entry?.note && <p className='text-slate-400 text-xs mt-0.5'>{entry.note}</p>}
-                                                {entry?.updatedAt && <p className='text-slate-500 text-xs'>{new Date(entry.updatedAt).toLocaleString()}</p>}
-                                            </div>
+                {complaints.length > 0 && (
+                    <div>
+                        <p className='text-slate-400 text-sm mb-4'>Found {complaints.length} complaint{complaints.length !== 1 ? 's' : ''}</p>
+                        <div className='max-h-[600px] overflow-y-auto space-y-4 pr-2'>
+                            {complaints.map((complaint) => (
+                                <div key={complaint.complaint_id} className='bg-slate-800 rounded-lg p-4'>
+                                    {/* Header */}
+                                    <div className='flex justify-between items-start mb-4'>
+                                        <div>
+                                            <p className='text-white font-medium'>{complaint.complaint_id}</p>
+                                            <p className='text-slate-400 text-xs mt-0.5'>Filed on {new Date(complaint.createdAt).toLocaleString()}</p>
                                         </div>
-                                    )
-                                })}
-                            </div>
+                                        <span className={`text-xs px-2 py-1 rounded-full ${statusColor[complaint.status]}`}>
+                                            {complaint.status}
+                                        </span>
+                                    </div>
+
+                                    {/* Info */}
+                                    <div className='grid grid-cols-2 gap-2 text-sm mb-4'>
+                                        <div>
+                                            <p className='text-slate-400 text-xs'>Waste Type</p>
+                                            <p className='text-slate-300 capitalize'>{complaint.waste_type}</p>
+                                        </div>
+                                        <div>
+                                            <p className='text-slate-400 text-xs'>Severity</p>
+                                            <p className={complaint.severity === 'HIGH' ? 'text-red-400' : 'text-green-400'}>{complaint.severity}</p>
+                                        </div>
+                                        <div className='col-span-2'>
+                                            <p className='text-slate-400 text-xs'>Location</p>
+                                            <p className='text-slate-300'>{complaint.location}</p>
+                                        </div>
+                                    </div>
+
+                                    {/* Timeline */}
+                                    <div>
+                                        <p className='text-slate-400 text-xs mb-3'>Timeline</p>
+                                        <div className='flex flex-col gap-3'>
+                                            {STATUS_PIPELINE.map((s, i) => {
+                                                const entry = complaint.timeline?.find(t => t.status === s)
+                                                const reached = STATUS_PIPELINE.indexOf(complaint.status) >= i
+                                                return (
+                                                    <div key={s} className='flex gap-3 items-start'>
+                                                        <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${reached ? 'bg-green-400' : 'bg-slate-600'}`} />
+                                                        <div>
+                                                            <p className={`text-sm ${reached ? 'text-white' : 'text-slate-500'}`}>{s}</p>
+                                                            {entry?.note && <p className='text-slate-400 text-xs mt-0.5'>{entry.note}</p>}
+                                                            {entry?.updatedAt && <p className='text-slate-500 text-xs'>{new Date(entry.updatedAt).toLocaleString()}</p>}
+                                                        </div>
+                                                    </div>
+                                                )
+                                            })}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 )}

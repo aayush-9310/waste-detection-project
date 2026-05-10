@@ -3,7 +3,7 @@ import ComplaintForm from '../components/ComplaintForm'
 
 export default function FileComplaint() {
     return (
-        <div className='min-h-screen bg-slate-900'>
+        <div className='max-h-screen bg-slate-900'>
             <Navbar />
             <ComplaintForm />
         </div>

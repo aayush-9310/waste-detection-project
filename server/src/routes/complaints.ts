@@ -69,19 +69,19 @@ router.get('/track', async (req, res) => {
             return
         }
 
-        const found = await complaint.findOne({
+        const found = await complaint.find({
             $or: [
                 { complaint_id: q.toUpperCase() },
                 { email: q.toLowerCase() }
             ]
-        })
+        }).sort({ createdAt: -1 })
 
-        if (!found) {
+        if (found.length === 0) {
             res.status(404).json({ error: 'Complaint not found' })
             return
         }
 
-        res.json({ complaint: found })
+        res.json({ complaints: found })
     } catch (e) {
         console.error(e)
         res.status(500).json({ error: 'Failed to track complaint' })

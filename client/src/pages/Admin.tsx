@@ -96,9 +96,9 @@ export default function Admin() {
     }
 
     return (
-        <div className='min-h-screen bg-slate-900'>
+        <div className='max-h-screen bg-slate-900'>
             <Navbar />
-            <div className='max-w-3xl mx-auto px-4 py-8'>
+            <div className='max-w-3xl mx-auto px-4 mt-24 pb-8'>
                 <div className='flex justify-between items-center mb-6'>
                     <h1 className='text-white text-2xl font-medium'>
                         Admin Dashboard

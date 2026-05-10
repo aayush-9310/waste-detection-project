@@ -10,9 +10,9 @@ export default function Navbar() {
     ]
 
     return (
-        <nav className='flex items-center justify-between bg-slate-800 px-10 h-14'>
+        <nav className='fixed top-0 w-screen flex items-center justify-between bg-slate-800 px-10 h-14'>
             <Link to="/" className='text-white text-lg'>
-                Waste Detection
+                Waste Detection & Complaint System
             </Link>
             <div className='flex gap-8'>
                 {links.map(link => (

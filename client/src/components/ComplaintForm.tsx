@@ -51,7 +51,7 @@ export default function ComplaintForm() {
     return (
         <div className='min-h-screen bg-slate-900'>
             <Navbar />
-            <div className='max-w-md mx-auto px-4 py-8'>
+            <div className='max-w-md mx-auto px-4 mt-24 pb-8'>
                 <h2 className='text-white text-2xl font-medium mb-6'>File a Complaint</h2>
 
                 <div className='bg-slate-800 rounded-lg p-4 mb-6'>

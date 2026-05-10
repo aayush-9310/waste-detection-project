@@ -102,7 +102,7 @@ export default function Home() {
         formData.append("file", image)
 
         try {
-            const res = await axios.post('http://localhost:3000/api/detect', formData)
+            const res = await axios.post('http://localhost:5001/predict', formData)
             console.log(res.data)  // add this
 
             setResult({ ...res.data, image: preview })
@@ -124,10 +124,10 @@ export default function Home() {
     }
 
     return (
-        <div className="min-h-screen bg-slate-900">
+        <div className="max-h-screen bg-slate-900 pt-16">
             <Navbar />
-            <div className='max-w-md mx-auto px-4 py-10'>
-                <h1 className='text-white text-3xl font-medium mb-2'>Waste Detection</h1>
+            <div className='max-w-xl mt-10 mx-auto px-4'>
+                <h1 className='text-white text-3xl font-medium mb-2'>Waste Detection & Complaint System</h1>
                 <p className='text-slate-400 text-sm mb-8'>Upload a photo or use your camera</p>
 
                 <input ref={uploadRef} type="file" accept="image/*" onChange={handleImage} className='hidden' />

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import Navbar from '../components/Navbar'
 import axios from 'axios'
 
 export default function AdminLogin() {
@@ -35,7 +36,8 @@ export default function AdminLogin() {
     }
 
     return (
-        <div className='min-h-screen bg-slate-900 flex items-center justify-center'>
+        <div className='min-h-screen bg-slate-900 flex items-center justify-center pt-5'>
+            <Navbar />
             <div className='bg-slate-800 rounded-lg p-8 w-full max-w-sm'>
                 <h1 className='text-white text-2xl font-medium mb-2'>Admin Login</h1>
                 <p className='text-slate-400 text-sm mb-6'>Waste Detection System</p>
