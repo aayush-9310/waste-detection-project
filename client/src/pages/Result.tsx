@@ -36,12 +36,12 @@ export default function Result() {
                 </div>
 
                 {result.severity === "HIGH" ? (
-                    <button
-                        className="bg-green-500 text-white px-6 py-3 rounded-lg w-full"
-                        onClick={() => navigate('/complaints')}
-                    >
-                        File a Complaint
-                    </button>
+              <button
+    className="bg-green-500 text-white px-6 py-3 rounded-lg w-full"
+    onClick={() => navigate('/file-complaint')}
+>
+    File a Complaint
+</button>
                 ) : (
                     result.tips && (
                         <div className="bg-slate-800 rounded-lg p-4">

@@ -5,6 +5,7 @@ import mongoose from 'mongoose'
 import dotenv from 'dotenv'
 import detectRouter from './routes/detect.js'
 import complaintRouter from './routes/complaints.js'
+import authRouter from './routes/auth.js'
 
 dotenv.config()
 
@@ -15,6 +16,7 @@ app.use(cors())
 
 app.use('/api/detect' , detectRouter)
 app.use('/api/complaints' , complaintRouter)
+app.use('/api/auth' , authRouter)
 
 async function main(){
     try{

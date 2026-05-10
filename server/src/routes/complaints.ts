@@ -1,5 +1,6 @@
 import express from 'express'
 import complaint from '../models/complaint.js'
+import { verifyAdmin } from '../middleware/auth.js' 
 
 const router = express.Router()
 
@@ -46,7 +47,7 @@ router.post("/", async (req, res) => {
     }
 })
 
-router.get('/', async (req, res) => {
+router.get('/', verifyAdmin, async (req, res) => {
     try {
         const complaints = await complaint.find().sort({ createdAt: -1 })
         res.json({
@@ -59,8 +60,36 @@ router.get('/', async (req, res) => {
     }
 })
 
+// GET — public, track by complaint_id or email
+router.get('/track', async (req, res) => {
+    try {
+        const q = req.query['q'] as string
+        if (!q) {
+            res.status(400).json({ error: 'Query required' })
+            return
+        }
+
+        const found = await complaint.findOne({
+            $or: [
+                { complaint_id: q.toUpperCase() },
+                { email: q.toLowerCase() }
+            ]
+        })
+
+        if (!found) {
+            res.status(404).json({ error: 'Complaint not found' })
+            return
+        }
+
+        res.json({ complaint: found })
+    } catch (e) {
+        console.error(e)
+        res.status(500).json({ error: 'Failed to track complaint' })
+    }
+})
+
 // PATCH — update status with note
-router.patch('/:complaint_id', async (req, res) => {
+router.patch('/:complaint_id', verifyAdmin, async (req, res) => {
     try {
         const { status, note } = req.body
         const validStatuses = ['Pending', 'Viewed', 'Forwarded', 'In Progress', 'Resolved']
@@ -71,7 +100,7 @@ router.patch('/:complaint_id', async (req, res) => {
         }
 
         const updated = await complaint.findOneAndUpdate(
-            { complaint_id: req.params.complaint_id },
+            { complaint_id: req.params['complaint_id'] } as Record<string, unknown>,
             {
                 $set: { status },
                 $push: { timeline: { status, note: note || '', updatedAt: new Date() } }
@@ -96,4 +125,6 @@ router.patch('/:complaint_id', async (req, res) => {
     }
 })
 
-export default router
+export default router    
+
+

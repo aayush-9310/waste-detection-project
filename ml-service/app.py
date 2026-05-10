@@ -15,7 +15,7 @@ print("Loading models...")
 waste_model    = tf.keras.models.load_model('models/waste_classifier_final.keras')
 severity_model = tf.keras.models.load_model('models/severity_model_best.h5')
 
-with open('models/class_indices.json', 'r') as f:
+with open('models/class_indices.json', 'r') as f:   
     waste_classes = {int(k): v for k, v in json.load(f).items()}    #  json.load(f) - read json file and convert it into python dict , .items() - convert dict into key-value pairs  ,loop through each key value pair converting key from string to integer, final output --> { 0 : 'plastic', 1:'paper' }
 
 with open('models/severity_class_indices.json', 'r') as f:
