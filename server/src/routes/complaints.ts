@@ -1,6 +1,7 @@
 import express from 'express'
 import complaint from '../models/complaint.js'
 import { verifyAdmin } from '../middleware/auth.js' 
+import { sendEmail } from '../services/emailService.js'
 
 const router = express.Router()
 
@@ -112,6 +113,19 @@ router.patch('/:complaint_id', verifyAdmin, async (req, res) => {
             res.status(404).json({ error: 'Complaint not found' })
             return
         }
+
+        // email logic added 
+        if (status === 'Resolved') {
+            try {
+                await sendEmail(updated.email, updated.complaint_id, updated.name, note);
+            } catch (emailError) {
+                console.error("Failed to send resolution email:", emailError);
+                // Continue with response even if email fails
+            }
+        }
+
+
+
 
         res.json({
             msg: 'Status updated',
