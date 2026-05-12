@@ -54,7 +54,7 @@ export default function Complaints() {
     return (
         <div className='max-h-screen bg-slate-900'>
             <Navbar />
-            <div className='max-w-md mx-auto px-4 mt-24 pb-8'>
+            <div className='max-w-xl mx-auto px-4 mt-24 pb-8'>
                 <h1 className='text-white text-2xl font-medium mb-2'>Track Your Complaint</h1>
                 <p className='text-slate-400 text-sm mb-8'>Enter your complaint ID or email to check status</p>
 
@@ -81,7 +81,7 @@ export default function Complaints() {
                 {complaints.length > 0 && (
                     <div>
                         <p className='text-slate-400 text-sm mb-4'>Found {complaints.length} complaint{complaints.length !== 1 ? 's' : ''}</p>
-                        <div className='max-h-[600px] overflow-y-auto space-y-4 pr-2'>
+                        <div className='min-h-[600px] overflow-hidden space-y-4 pr-2'>
                             {complaints.map((complaint) => (
                                 <div key={complaint.complaint_id} className='bg-slate-800 rounded-lg p-4'>
                                     {/* Header */}
